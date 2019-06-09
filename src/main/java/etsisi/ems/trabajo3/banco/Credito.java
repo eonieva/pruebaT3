@@ -90,7 +90,7 @@ public class Credito extends Tarjeta {
 		    .realizarMovimiento("Liquidación de operaciones tarj. crédito, " + (mes) + " de " + (anyo), -r);
 	}
     }
-    
+
     public double obtenerLiquidacion(int mes, int anyo) throws Exception {
 	double r = 0.0;
 	for (int i = 0; i < this.mMovimientosCredito.size(); i++) {
@@ -102,12 +102,19 @@ public class Credito extends Tarjeta {
 	return r;
     }
 
-    // liquidación parcial sobre el total de los gastos realizados con esa tarjeta
-    // durante el mes/año de liquidación que consiste en lo siguiente:
-    // los gastos totales, incluida una comisión de 12%, se dividen en 3 cuotas a
-    // pagar en los 3 meses siguientes
     public void liquidarPlazos(int mes, int anyo) throws Exception {
-	// TODO
+	double r = obtenerLiquidacion(mes, anyo);
+	if (r != 0) {
+	    for (int i = 0; i < 3; i++) {
+		if (mes == 12) {
+		    mes = 1;
+		    anyo++;
+		} else
+		    mes++;
+		this.mCuentaAsociada.realizarMovimiento(
+			"Liquidación Parcial de operaciones tarj. crédito, " + (mes) + " de " + (anyo), -r);
+	    }
+	}
     }
 
     public static class BuilderCredito {
