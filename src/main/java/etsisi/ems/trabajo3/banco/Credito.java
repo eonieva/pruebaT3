@@ -25,12 +25,12 @@ public class Credito extends Tarjeta {
 		credito.put(tipos.OTRA, 600.0);
 	}
 	private final int COMISIONMINIMA = 3;
-	protected double mCredito;
-	public String mNombreEntidad;
-	public int mCCV;
-	public marcas mMarcaInternacional; //mastercard, maestro, visa ...
-	public tipos mTipo; //oro platino clásica
-	protected Vector<Movimiento> mMovimientosTarjeta;
+	private double mCredito;
+	private String mNombreEntidad;
+	private int mCCV;
+	private marcas mMarcaInternacional; //mastercard, maestro, visa ...
+	private tipos mTipo; //oro platino clásica
+	private Vector<Movimiento> mMovimientosTarjeta;
 
 	public Credito (String numero, String titular, LocalDate fechacaducidad) {
 		super(numero,titular,fechacaducidad);
@@ -128,6 +128,7 @@ public class Credito extends Tarjeta {
 		}
 		public BuilderCredito mTipo (tipos tipo) {
 			this.tarjetaCredito.mTipo = tipo;
+			this.mCredito(credito.get(tipo));
 			return this;
 		}
 

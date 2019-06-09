@@ -7,8 +7,8 @@ import java.util.Vector;
 
 public class Cuenta {
 	private String mNumero;
-	protected String mTitular;
-	protected Vector<Movimiento> mMovimientos;
+	private String mTitular;
+	private Vector<Movimiento> mMovimientos;
 
 	public Cuenta(String numero, String titular) {
 		this.mNumero = numero;
@@ -49,7 +49,7 @@ public class Cuenta {
 	}
 
 	public void addMovimiento(Movimiento m) {
-		mMovimientos.addElement(m);
+		this.mMovimientos.addElement(m);
 	}
 	
 	public void realizarMovimiento(String concepto, double x) {
@@ -59,7 +59,7 @@ public class Cuenta {
 		Date date = new Date();
 		LocalDate fecha = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		m.setFecha(fecha);
-		this.mMovimientos.addElement(m);
+		addMovimiento(m);
 	}
 	
 }
