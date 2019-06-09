@@ -53,13 +53,7 @@ public class Cuenta {
 	}
 	
 	public void realizarMovimiento(String concepto, double x) {
-		Movimiento m = new Movimiento();
-		m.setConcepto(concepto);
-		m.setImporte(x);
-		Date date = new Date();
-		LocalDate fecha = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		m.setFecha(fecha);
-		addMovimiento(m);
+		addMovimiento(new Movimiento(concepto,x));
 	}
 	
 }
