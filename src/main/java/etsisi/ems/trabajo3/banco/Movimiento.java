@@ -5,51 +5,53 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class Movimiento {
-	
-	private String mConcepto;
-	protected LocalDate mFecha;
-	private double mImporte;
-	private boolean mLiquidado;
+    
+    private String mConcepto;
+    private LocalDate mFecha;
+    private double mImporte;
+    private boolean mLiquidado;
 
-	public Movimiento() {		
-	}
-	
-	public Movimiento(String concepto, double importe) {
-		this.mConcepto = concepto;
-		this.mImporte = importe;
-		this.mFecha = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		setLiquidado(false);
-	}
+    public Movimiento() {
+	setLiquidado(false); // lo necesito para los movimientos de las tarjetas de crédito
+    }
 
-	public double getImporte() {
-		return mImporte;
-	}
+    public Movimiento(String concepto, double importe) {
+	this.mConcepto = concepto;
+	this.mImporte = importe;
+	this.mFecha = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	setLiquidado(false);
+    }
 
-	public String getConcepto() {
-		return mConcepto;
-	}
+    public double getImporte() {
+	return this.mImporte;
+    }
 
-	public void setConcepto(String newMConcepto) {
-		mConcepto = newMConcepto;
-	}
+    public String getConcepto() {
+	return this.mConcepto;
+    }
 
-	public LocalDate getFecha() {
-		return mFecha;
-	}
+    public void setConcepto(String newMConcepto) {
+	this.mConcepto = newMConcepto;
+    }
 
-	public void setFecha(LocalDate newMFecha) {
-		mFecha = newMFecha;
-	}
+    public LocalDate getFecha() {
+	return this.mFecha;
+    }
 
-	public void setImporte(double newMImporte) {
-		mImporte = newMImporte;
-	}
+    public void setFecha(LocalDate newMFecha) {
+	this.mFecha = newMFecha;
+    }
 
-	public boolean isLiquidado() {
-		return mLiquidado;
-	}
+    public void setImporte(double newMImporte) {
+	this.mImporte = newMImporte;
+    }
 
-	public void setLiquidado(boolean mliquidado) {
-		this.mLiquidado = mliquidado;
-	}
+    public boolean isLiquidado() {
+	return this.mLiquidado;
+    }
+
+    public void setLiquidado(boolean mliquidado) {
+	this.mLiquidado = mliquidado;
+    }
+
 }

@@ -1,9 +1,7 @@
 package etsisi.ems.trabajo3.banco;
 
-import java.util.Date;
-import java.util.Vector;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.util.Vector;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -17,123 +15,102 @@ public class Credito extends Tarjeta {
 	ORO, PLATINO, CLASICA, OTRA
     }
 
-    private static final Map<marcas, Double> tarifa = new HashMap<marcas, Double>();
-    private static final Map<tipos, Double> credito = new HashMap<tipos, Double>();
+    private final int MINCOMISION = 3;
+    private final double BASECOMISION = 0.05;
+    private static final Map<marcas, Double> TARIFA = new HashMap<marcas, Double>();
+    private static final Map<tipos, Double> CREDITO = new HashMap<tipos, Double>();
     static {
-	tarifa.put(marcas.MASTERCARD, 0.05);
-	tarifa.put(marcas.MAESTRO, 0.05);
-	tarifa.put(marcas.CLASICA, 0.03);
-	tarifa.put(marcas.ELECTRON, 0.02);
-	tarifa.put(marcas.OTRA, 0.05);
-	credito.put(tipos.ORO, 1000.0);
-	credito.put(tipos.PLATINO, 800.0);
-	credito.put(tipos.CLASICA, 600.0);
-	credito.put(tipos.OTRA, 600.0);
+	TARIFA.put(marcas.MASTERCARD, 0.05);
+	TARIFA.put(marcas.MAESTRO, 0.05);
+	TARIFA.put(marcas.CLASICA, 0.03);
+	TARIFA.put(marcas.ELECTRON, 0.02);
+	TARIFA.put(marcas.OTRA, 0.05);
+
+	CREDITO.put(tipos.ORO, 1000.0);
+	CREDITO.put(tipos.PLATINO, 800.0);
+	CREDITO.put(tipos.CLASICA, 600.0);
+	CREDITO.put(tipos.OTRA, 600.0);
     }
-    private final int COMISIONMINIMA = 3;
+
     private double mCredito;
     private String mNombreEntidad;
     private int mCCV;
-    private marcas mMarcaInternacional; // mastercard, maestro, visa ...
-    private tipos mTipo; // oro platino clásica
-    private Vector<Movimiento> mMovimientosTarjeta;
+    private marcas mMarcaInternacional;
+    private tipos mTipo;
+    private Vector<Movimiento> mMovimientosCredito;
 
-    public Credito(String numero, String titular, LocalDate fechacaducidad) {
-	super(numero, titular, fechacaducidad);
-	this.mMovimientosTarjeta = new Vector<Movimiento>();
+    public Credito(String numero, String titular, LocalDate fechaCaducidad) {
+	super(numero, titular, fechaCaducidad);
+	this.mMovimientosCredito = new Vector<Movimiento>();
     }
 
-    public static BuilderCredito builder(String numero, String titular, LocalDate fechacaducidad) {
-	return new BuilderCredito(numero, titular, fechacaducidad);
-    }
-
-    public void setCuenta(Cuenta c) {
-	mCuentaAsociada = c;
+    public static BuilderCredito builder(String numero, String titular, LocalDate fechaCaducidad) {
+	return new BuilderCredito(numero, titular, fechaCaducidad);
     }
 
     public void retirar(double x) throws Exception {
-	double comisiontarifa = tarifa.get(mMarcaInternacional);
-
-	double comision = (x * comisiontarifa < COMISIONMINIMA ? COMISIONMINIMA : x * comisiontarifa);
+	double comisiontarifa = TARIFA.get(this.mMarcaInternacional);
+	double comision = (x * comisiontarifa < MINCOMISION ? MINCOMISION : x * comisiontarifa);
 	if (x > getCreditoDisponible())
 	    throw new Exception("Crédito insuficiente");
-
-	this.mMovimientosTarjeta
+	this.mMovimientosCredito
 		.addElement(new Movimiento("Retirada en cuenta asociada (cajero automático)", x + comision));
     }
 
-    // traspaso tarjeta a cuenta
     public void ingresar(double x) throws Exception {
-	double comision = (x * 0.05 < COMISIONMINIMA ? COMISIONMINIMA : x * 0.05); // Añadimos una comisión de un 5%,
-										   // mínimo de 3 euros.
+	double comision = (x * BASECOMISION < MINCOMISION ? MINCOMISION : x * BASECOMISION);
 	if (x > getCreditoDisponible())
 	    throw new Exception("Crédito insuficiente");
-	this.mMovimientosTarjeta.addElement(new Movimiento("Traspaso desde tarjeta a cuenta", x));
+	this.mMovimientosCredito.addElement(new Movimiento("Traspaso desde tarjeta a cuenta", x));
 	this.mCuentaAsociada.ingresar("Traspaso desde tarjeta a cuenta", x);
 	this.mCuentaAsociada.retirar("Comision Traspaso desde tarjeta a cuenta", comision);
     }
 
     public void pagoEnEstablecimiento(String datos, double x) throws Exception {
-	this.mMovimientosTarjeta.addElement(new Movimiento("Compra a crédito en: " + datos, x));
+	this.mMovimientosCredito.addElement(new Movimiento("Compra a crédito en: " + datos, x));
     }
 
     public double getSaldo() {
 	double r = 0.0;
-	for (int i = 0; i < this.mMovimientosTarjeta.size(); i++) {
-	    Movimiento m = (Movimiento) mMovimientosTarjeta.elementAt(i);
+	for (int i = 0; i < this.mMovimientosCredito.size(); i++) {
+	    Movimiento m = (Movimiento) mMovimientosCredito.elementAt(i);
 	    r += m.getImporte();
 	}
 	return r;
     }
 
     public double getCreditoDisponible() {
-	return mCredito - getSaldo();
+	return this.mCredito - getSaldo();
     }
 
     public void liquidar(int mes, int anyo) throws Exception {
-	double r = calcularLiquidacion(mes, anyo);
-	if (r != 0) {
-	    this.mCuentaAsociada.realizarMovimiento("Liquidación de operaciones tarj. crédito, " + (mes) + " de " + (anyo), -r);
-	}
-    }
-
-    public double calcularLiquidacion(int mes, int anyo) {
 	double r = 0.0;
-	for (int i = 0; i < this.mMovimientosTarjeta.size(); i++) {
-	    Movimiento m = (Movimiento) this.mMovimientosTarjeta.elementAt(i);
-	    if (estaLiquidado(mes,anyo,m))
+	for (int i = 0; i < this.mMovimientosCredito.size(); i++) {
+	    Movimiento m = (Movimiento) mMovimientosCredito.elementAt(i);
+	    if (m.getFecha().getMonthValue() == mes && m.getFecha().getYear() == anyo && !m.isLiquidado())
 		r += m.getImporte();
 	    m.setLiquidado(true);
 	}
-	return r;
-    }
-    
-    public boolean estaLiquidado(int mes, int anyo, Movimiento m) {
-	return (m.getFecha().getMonthValue() == mes && m.getFecha().getYear() == anyo && !m.isLiquidado());
-    }
-
-    public void liquidarPlazos(int mes, int anyo) throws Exception {
-	double r = calcularLiquidacion(mes, anyo) * 1.12;
 	if (r != 0) {
-	    for (int i = 0; i < 3; i++) {
-		if (mes == 12) {
-		    mes=1;
-		    anyo++;
-		}
-		else {
-		    mes ++;
-		}
-		this.mCuentaAsociada.realizarMovimiento("Liquidación de operaciones tarj. crédito, " + (mes) + " de " + (anyo), -r);
-	    }
+	    this.mCuentaAsociada
+		    .realizarMovimiento("Liquidación de operaciones tarj. crédito, " + (mes) + " de " + (anyo), -r);
 	}
+    }
 
+    // liquidación parcial sobre el total de los gastos realizados con esa tarjeta
+    // durante el mes/año de liquidación que consiste en lo siguiente:
+    // los gastos totales, incluida una comisión de 12%, se dividen en 3 cuotas a
+    // pagar en los 3 meses siguientes
+    public void liquidarPlazos(int mes, int anyo) throws Exception {
+	// TODO
     }
 
     public static class BuilderCredito {
+
 	private Credito tarjetaCredito;
 
-	public BuilderCredito(String numero, String titular, LocalDate fechacaducidad) {
-	    this.tarjetaCredito = new Credito(numero, titular, fechacaducidad);
+	public BuilderCredito(String numero, String titular, LocalDate fechaCaducidad) {
+	    this.tarjetaCredito = new Credito(numero, titular, fechaCaducidad);
 	}
 
 	public BuilderCredito mCredito(double credito) {
@@ -158,7 +135,7 @@ public class Credito extends Tarjeta {
 
 	public BuilderCredito mTipo(tipos tipo) {
 	    this.tarjetaCredito.mTipo = tipo;
-	    this.mCredito(credito.get(tipo));
+	    this.mCredito(CREDITO.get(tipo));
 	    return this;
 	}
 
