@@ -53,27 +53,30 @@ public class Credito extends Tarjeta {
 	double comision = (x * comisiontarifa < MINCOMISION ? MINCOMISION : x * comisiontarifa);
 	if (x > getCreditoDisponible())
 	    throw new Exception("Crédito insuficiente");
-	this.mMovimientosCredito
-		.addElement(new Movimiento("Retirada en cuenta asociada (cajero automático)", x + comision));
+	movimientoTarjeta("Retirada en cuenta asociada (cajero automático)", x + comision);
     }
 
     public void ingresar(double x) throws Exception {
 	double comision = (x * BASECOMISION < MINCOMISION ? MINCOMISION : x * BASECOMISION);
 	if (x > getCreditoDisponible())
 	    throw new Exception("Crédito insuficiente");
-	this.mMovimientosCredito.addElement(new Movimiento("Traspaso desde tarjeta a cuenta", x));
+	movimientoTarjeta("Traspaso desde tarjeta a cuenta", x);
 	this.mCuentaAsociada.ingresar("Traspaso desde tarjeta a cuenta", x);
 	this.mCuentaAsociada.retirar("Comision Traspaso desde tarjeta a cuenta", comision);
     }
 
     public void pagoEnEstablecimiento(String datos, double x) throws Exception {
-	this.mMovimientosCredito.addElement(new Movimiento("Compra a crédito en: " + datos, x));
+	movimientoTarjeta("Compra a crédito en: " + datos, x);
+    }
+    
+    public void movimientoTarjeta(String concepto, double x) {
+	this.mMovimientosCredito.addElement(new Movimiento (concepto, x));
     }
 
     public double getSaldo() {
 	double r = 0.0;
 	for (int i = 0; i < this.mMovimientosCredito.size(); i++) {
-	    Movimiento m = (Movimiento) mMovimientosCredito.elementAt(i);
+	    Movimiento m = mMovimientosCredito.elementAt(i);
 	    r += m.getImporte();
 	}
 	return r;
@@ -94,7 +97,7 @@ public class Credito extends Tarjeta {
     public double obtenerLiquidacion(int mes, int anyo) throws Exception {
 	double r = 0.0;
 	for (int i = 0; i < this.mMovimientosCredito.size(); i++) {
-	    Movimiento m = (Movimiento) mMovimientosCredito.elementAt(i);
+	    Movimiento m = mMovimientosCredito.elementAt(i);
 	    if (m.getFecha().getMonthValue() == mes && m.getFecha().getYear() == anyo && !m.isLiquidado())
 		r += m.getImporte();
 	    m.setLiquidado(true);

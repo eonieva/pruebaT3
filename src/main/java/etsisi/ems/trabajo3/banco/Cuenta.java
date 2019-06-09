@@ -42,20 +42,14 @@ public class Cuenta {
     public double getSaldo() {
 	double r = 0.0;
 	for (int i = 0; i < this.mMovimientos.size(); i++) {
-	    Movimiento m = (Movimiento) mMovimientos.elementAt(i);
+	    Movimiento m =  mMovimientos.elementAt(i);
 	    r += m.getImporte();
 	}
 	return r;
     }
 
     public void realizarMovimiento(String concepto, double x) {
-	Movimiento m = new Movimiento();
-	m.setConcepto(concepto);
-	m.setImporte(x);
-	Date date = new Date();
-	LocalDate fecha = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-	m.setFecha(fecha);
-	this.mMovimientos.addElement(m);
+	this.mMovimientos.addElement(new Movimiento (concepto, x));
     }
 
 }
