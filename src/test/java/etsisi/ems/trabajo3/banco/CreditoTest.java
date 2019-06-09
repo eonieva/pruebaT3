@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
+import etsisi.ems.trabajo3.banco.Credito.marcas;
 
 public class CreditoTest extends TestCase {
 	Cuenta cuenta;
@@ -27,7 +28,7 @@ public class CreditoTest extends TestCase {
 		Date hoy = new Date();
 		LocalDate fechacaducidad = hoy.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		fechacaducidad.plusYears(4); // Caduca en 4 años
-		tarjeta = new Credito("1234567890123456", "Fulano de Tal", fechacaducidad, 1000.0, 1, "bbva", 123); // 1000€ de crédito, tarjeta mastercard
+		tarjeta = new Credito("1234567890123456", "Fulano de Tal", fechacaducidad, 1000.0, marcas.MASTERCARD, "bbva", 123); // 1000€ de crédito, tarjeta mastercard
 		tarjeta.setCuenta(cuenta);
 	}
 

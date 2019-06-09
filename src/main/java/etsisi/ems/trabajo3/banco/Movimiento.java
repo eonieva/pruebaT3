@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class Movimiento {
+	
 	public String mConcepto;
 	protected LocalDate mFecha;
 	private double mImporte;
@@ -12,7 +13,13 @@ public class Movimiento {
 
 	public Movimiento() {		
 		setLiquidado(false); //lo necesito para los movimientos de las tarjetas de crédito
-
+	}
+	
+	public Movimiento(String concepto, double importe) {
+		this.mConcepto = concepto;
+		this.mImporte = importe;
+		this.mFecha = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		setLiquidado(false);
 	}
 
 	public double getImporte() {

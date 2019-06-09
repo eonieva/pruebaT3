@@ -11,48 +11,24 @@ public class Cuenta {
 	protected Vector<Movimiento> mMovimientos;
 
 	public Cuenta(String numero, String titular) {
-		mNumero = numero;
-		mTitular = titular;
-		mMovimientos = new Vector<Movimiento>();
+		this.mNumero = numero;
+		this.mTitular = titular;
+		this.mMovimientos = new Vector<Movimiento>();
 	}
+	
 
 	public void ingresar(double x) throws Exception {
-		if (x <= 0)
-			throw new Exception("No se puede ingresar una cantidad negativa");
-		Movimiento m = new Movimiento();
-		m.setConcepto("Ingreso en efectivo");
-		m.setImporte(x);
-		Date date = new Date();
-		LocalDate fecha = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		m.setFecha(fecha);
-		this.mMovimientos.addElement(m);
-	}
-
-	public void retirar(double x) throws Exception {
-		if (x <= 0)
-			throw new Exception("No se puede retirar una cantidad negativa");
-		if (getSaldo() < x)
-			throw new Exception("Saldo insuficiente");
-		Movimiento m = new Movimiento();
-		m.setConcepto("Retirada de efectivo");
-		m.setImporte(-x);
-		Date date = new Date();
-		LocalDate fecha = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		m.setFecha(fecha);
-		this.mMovimientos.addElement(m);
-
+		this.ingresar("SIN CONCEPTO", x);
 	}
 
 	public void ingresar(String concepto, double x) throws Exception {
 		if (x <= 0)
 			throw new Exception("No se puede ingresar una cantidad negativa");
-		Movimiento m = new Movimiento();
-		m.setConcepto(concepto);
-		m.setImporte(x);
-		Date date = new Date();
-		LocalDate fecha = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		m.setFecha(fecha);
-		this.mMovimientos.addElement(m);
+		this.realizarMovimiento(concepto, x);
+	}
+	
+	public void retirar(double x) throws Exception {
+		this.retirar("SIN CONCEPTO", x);
 	}
 
 	public void retirar(String concepto, double x) throws Exception {
@@ -60,13 +36,7 @@ public class Cuenta {
 			throw new Exception("No se puede retirar una cantidad negativa");
 		if (getSaldo() < x)
 			throw new Exception("Saldo insuficiente");
-		Movimiento m = new Movimiento();
-		m.setConcepto(concepto);
-		m.setImporte(-x);
-		Date date = new Date();
-		LocalDate fecha = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		m.setFecha(fecha);
-		this.mMovimientos.addElement(m);
+		this.realizarMovimiento(concepto, -x);
 	}
 
 	public double getSaldo() {
@@ -81,4 +51,15 @@ public class Cuenta {
 	public void addMovimiento(Movimiento m) {
 		mMovimientos.addElement(m);
 	}
+	
+	public void realizarMovimiento(String concepto, double x) {
+		Movimiento m = new Movimiento();
+		m.setConcepto(concepto);
+		m.setImporte(x);
+		Date date = new Date();
+		LocalDate fecha = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		m.setFecha(fecha);
+		this.mMovimientos.addElement(m);
+	}
+	
 }
