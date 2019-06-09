@@ -36,39 +36,10 @@ public class Credito extends Tarjeta {
 		super(numero,titular,fechacaducidad);
 		this.mMovimientosTarjeta = new Vector<Movimiento>();
 	}
-	public Credito(String numero, String titular, LocalDate fechacaducidad, double credito, marcas marcainternacional,	String nombreentidad, int ccv) {
-		this(numero,titular,fechacaducidad);
-		this.mCredito = credito;
-		this.mNombreEntidad = nombreentidad;
-		this.mCCV = ccv;
-		this.mMarcaInternacional = marcainternacional;
+
+	public static BuilderCredito builder(String numero, String titular, LocalDate fechacaducidad) {
+		return new BuilderCredito(numero,titular,fechacaducidad);
 	}
-	public Credito(String numero, String titular, LocalDate fechacaducidad, tipos tipo, marcas marcainternacional, String nombreentidad, int ccv) {
-		this(numero,titular,fechacaducidad,credito.get(tipo),marcainternacional,nombreentidad,ccv);
-	}
-	/*
-	public Credito(String numero, String titular, LocalDate fechacaducidad, double credito, int marcainternacional,	String nombreentidad, int ccv) {
-		mNumero = numero;
-		mTitular = titular;
-		mFechaDeCaducidad = fechacaducidad;
-		mCredito = credito;
-		mMovimientos = new Vector<Movimiento>();
-		mMarcaInternacional = marcainternacional;
-		mNombreEntidad = nombreentidad;
-		mCCV = ccv;
-		}
-	public Credito(String numero, String titular, LocalDate fechacaducidad, int tipo, int marcainternacional, String nombreentidad, int ccv) {
-		mNumero = numero;
-		mTitular = titular;
-		mFechaDeCaducidad = fechacaducidad;
-		mTipo = tipo;
-		mCredito = calcularCredito(mTipo);
-		mMovimientos = new Vector<Movimiento>();
-		mMarcaInternacional = marcainternacional;
-		mNombreEntidad = nombreentidad;
-		mCCV = ccv;
-	}*/
-	
 	
 	public void setCuenta(Cuenta c) {
 		mCuentaAsociada = c;
@@ -81,7 +52,6 @@ public class Credito extends Tarjeta {
 		if (x > getCreditoDisponible())
 			throw new Exception("Crédito insuficiente");
 		
-		//this.mCuentaAsociada.retirar("Retirada en cuenta asociada (cajero automático)", x + comision);
 		this.mMovimientosTarjeta.addElement(new Movimiento("Retirada en cuenta asociada (cajero automático)", x + comision));
 	}
 
@@ -109,7 +79,6 @@ public class Credito extends Tarjeta {
 		return r;
 	}
 	
-	
 	public double getCreditoDisponible() {
 		return mCredito - getSaldo();
 	}
@@ -133,4 +102,38 @@ public class Credito extends Tarjeta {
 	public void liquidarPlazos (int mes, int anyo) throws Exception {
 		//TODO
 	}
+	
+	public static class BuilderCredito{
+		private Credito tarjetaCredito;
+		
+		public BuilderCredito(String numero, String titular, LocalDate fechacaducidad) {
+			this.tarjetaCredito = new Credito (numero, titular, fechacaducidad);
+		}
+
+		public BuilderCredito mCredito (double credito) {
+			this.tarjetaCredito.mCredito = credito;
+			return this;
+		}
+		public BuilderCredito mNombreEntidad (String nombreentidad) {
+			this.tarjetaCredito.mNombreEntidad = nombreentidad;
+			return this;
+		}
+		public BuilderCredito mCCV (int ccv) {
+			this.tarjetaCredito.mCCV = ccv;
+			return this;
+		}
+		public BuilderCredito mMarcaInternacional (marcas marcainternacional) {
+			this.tarjetaCredito.mMarcaInternacional = marcainternacional;
+			return this;
+		}
+		public BuilderCredito mTipo (tipos tipo) {
+			this.tarjetaCredito.mTipo = tipo;
+			return this;
+		}
+
+		public Credito build() {
+			return this.tarjetaCredito;
+		}
+	}
+	
 }

@@ -28,7 +28,7 @@ public class CreditoTest extends TestCase {
 		Date hoy = new Date();
 		LocalDate fechacaducidad = hoy.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		fechacaducidad.plusYears(4); // Caduca en 4 años
-		tarjeta = new Credito("1234567890123456", "Fulano de Tal", fechacaducidad, 1000.0, marcas.MASTERCARD, "bbva", 123); // 1000€ de crédito, tarjeta mastercard
+		tarjeta = new Credito.BuilderCredito("1234567890123456", "Fulano de Tal", fechacaducidad).mCredito(1000.0).mMarcaInternacional(marcas.MASTERCARD).mNombreEntidad("bbva").mCCV(123).build(); // 1000€ de crédito, tarjeta mastercard
 		tarjeta.setCuenta(cuenta);
 	}
 
