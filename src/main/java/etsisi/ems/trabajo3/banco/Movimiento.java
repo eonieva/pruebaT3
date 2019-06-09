@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class Movimiento {
 	
-	public String mConcepto;
+	private String mConcepto;
 	protected LocalDate mFecha;
 	private double mImporte;
 	private boolean mLiquidado;
