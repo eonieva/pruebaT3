@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Vector;
 
 public class Cuenta {
-	protected String mNumero;
+	private String mNumero;
 	protected String mTitular;
 	protected Vector<Movimiento> mMovimientos;
 
