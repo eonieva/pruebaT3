@@ -84,6 +84,14 @@ public class Credito extends Tarjeta {
     }
 
     public void liquidar(int mes, int anyo) throws Exception {
+	double r = obtenerLiquidacion(mes, anyo);
+	if (r != 0) {
+	    this.mCuentaAsociada
+		    .realizarMovimiento("Liquidación de operaciones tarj. crédito, " + (mes) + " de " + (anyo), -r);
+	}
+    }
+    
+    public double obtenerLiquidacion(int mes, int anyo) throws Exception {
 	double r = 0.0;
 	for (int i = 0; i < this.mMovimientosCredito.size(); i++) {
 	    Movimiento m = (Movimiento) mMovimientosCredito.elementAt(i);
@@ -91,10 +99,7 @@ public class Credito extends Tarjeta {
 		r += m.getImporte();
 	    m.setLiquidado(true);
 	}
-	if (r != 0) {
-	    this.mCuentaAsociada
-		    .realizarMovimiento("Liquidación de operaciones tarj. crédito, " + (mes) + " de " + (anyo), -r);
-	}
+	return r;
     }
 
     // liquidación parcial sobre el total de los gastos realizados con esa tarjeta
